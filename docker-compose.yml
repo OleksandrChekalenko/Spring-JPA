@@ -1,0 +1,19 @@
+# Note: docker-compose is only used to run the service locally
+version: "3.3"
+services:
+  mysql:
+    image: mysql/mysql-server:8.0
+    ports:
+      - target: 3306
+        published: 3366
+        protocol: tcp
+        mode: host
+    restart: always
+    environment:
+      MYSQL_DATABASE: asset
+      MYSQL_USER: user
+      MYSQL_PASSWORD: password
+    volumes:
+      - mysql-data:/var/lib/mysql
+volumes:
+  mysql-data:
