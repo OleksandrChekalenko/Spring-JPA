@@ -8,17 +8,28 @@ import com.example.pet.repository.PersonRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.http.HttpStatus;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 @RestController
 @RequestMapping("/api/v1/person")
 @RequiredArgsConstructor
 public class PersonController {
+
+    private static List<Person> PERSONS = Stream.of(
+        new Person("John", "Johnson"),
+        new Person("Peta", "Squirl"),
+        new Person("Alex", "Odinson")
+    ).collect(Collectors.toList());
+
+    static {
+        PERSONS.forEach(person -> person.setId((long) PERSONS.indexOf(person)));
+    }
+
     private final PersonRepository personRepository;
 
     @GetMapping("/all")
@@ -54,5 +65,16 @@ public class PersonController {
     @GetMapping("/personsWithNoteCountDtoPageable")
     public Page<PersonNoteCountDto> getAllPersonsWithNoteCountPageableDto(Pageable pageable) {
         return personRepository.findAllPersonsWithCountPageable(pageable);
+    }
+
+    @PostMapping
+    public PersonDto createPerson(@RequestBody PersonDto personDto) {
+        PERSONS.add(new Person(personDto.firstName(), personDto.lastName()));
+        return personDto;
+    }
+
+    @DeleteMapping("/{id}")
+    public HttpStatus deleteById(@PathVariable Long id) {
+        return PERSONS.removeIf(person -> person.getId().equals(id)) ? HttpStatus.OK : HttpStatus.NOT_FOUND;
     }
 }

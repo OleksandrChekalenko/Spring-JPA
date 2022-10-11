@@ -40,6 +40,11 @@ public class Person {
     @OneToMany(mappedBy = "person")
     private List<Note> notes = new ArrayList<Note>();
 
+    public Person(String firstName, String lastName) {
+        this.firstName = firstName;
+        this.lastName = lastName;
+    }
+
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
