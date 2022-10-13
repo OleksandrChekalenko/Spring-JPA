@@ -1,5 +1,7 @@
 package com.example.pet.entity;
 
+import com.example.pet.model.Role;
+import com.example.pet.model.Status;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
 import lombok.AccessLevel;
 import lombok.Getter;
@@ -8,12 +10,7 @@ import lombok.Setter;
 import lombok.ToString;
 import org.hibernate.Hibernate;
 
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
-import javax.persistence.Id;
-import javax.persistence.OneToMany;
-import javax.persistence.Table;
+import javax.persistence.*;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
@@ -28,16 +25,25 @@ public class Person {
     @Id
     @GeneratedValue
     private Long id;
-
     @Column(name = "first_name")
     private String firstName;
-
     @Column(name = "last_name")
     private String lastName;
+    @Column(name = "email")
+    private String email;
+    @Column(name = "password")
+    private String password;
+    @Enumerated(EnumType.STRING)
+    @Column(name = "role")
+    private Role role;
+    @Enumerated(EnumType.STRING)
+    @Column(name = "status")
+    private Status status;
 
     @JsonManagedReference
     @Setter(AccessLevel.PRIVATE)
     @OneToMany(mappedBy = "person")
+    @ToString.Exclude
     private List<Note> notes = new ArrayList<Note>();
 
     public Person(String firstName, String lastName) {

@@ -1,16 +1,16 @@
 package com.example.pet.model;
 
-public enum Permission {
+public enum Authorities {
   READ("permission:read"),
   WRITE("permission:write");
 
   private final String permission;
 
-  Permission(String permission) {
+  Authorities(String permission) {
     this.permission = permission;
   }
 
-  public String getPermission() {
+  public String getAuthorities() {
     return permission;
   }
 }
