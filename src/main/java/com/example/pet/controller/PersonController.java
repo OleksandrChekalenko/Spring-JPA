@@ -6,9 +6,11 @@ import com.example.pet.dto.PersonNoteCountDto;
 import com.example.pet.entity.Person;
 import com.example.pet.repository.PersonRepository;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -18,63 +20,70 @@ import java.util.stream.Stream;
 @RestController
 @RequestMapping("/api/v1/person")
 @RequiredArgsConstructor
+@Slf4j
 public class PersonController {
 
-    private static List<Person> PERSONS = Stream.of(
-        new Person("John", "Johnson"),
-        new Person("Peta", "Squirl"),
-        new Person("Alex", "Odinson")
-    ).collect(Collectors.toList());
+  private static List<Person> PERSONS = Stream.of(
+      new Person("John", "Johnson"),
+      new Person("Peta", "Squirl"),
+      new Person("Alex", "Odinson")
+  ).collect(Collectors.toList());
 
-    static {
-        PERSONS.forEach(person -> person.setId((long) PERSONS.indexOf(person)));
-    }
+  static {
+    PERSONS.forEach(person -> person.setId((long) PERSONS.indexOf(person)));
+  }
 
-    private final PersonRepository personRepository;
+  private final PersonRepository personRepository;
 
-    @GetMapping("/all")
-    public List<Person> getAllPersons() {
-        return personRepository.findAll();
-    }
+  @GetMapping("/all")
+  @PreAuthorize("hasAnyAuthority('permission:read')")
 
-    @GetMapping
-    public List<Person> getByFirstName(@RequestParam String firstName) {
-        return personRepository.findAllByFirstName(firstName);
-    }
+  public List<Person> getAllPersons() {
+    return personRepository.findAll();
+  }
 
-    @GetMapping("/notes")
-    public List<Person> getByFirstNameFetchNotes(@RequestParam String firstName) {
-        return personRepository.findAllByFirstNameFetchNotes(firstName);
-    }
+  @GetMapping
+  public List<Person> getByFirstName(@RequestParam String firstName) {
+    return personRepository.findAllByFirstName(firstName);
+  }
 
-    @GetMapping("/personsDto")
-    public List<PersonDto> getAllPersonsDto() {
-        return personRepository.findAllBy(PersonDto.class);
-    }
+  @GetMapping("/notes")
+  public List<Person> getByFirstNameFetchNotes(@RequestParam String firstName) {
+    return personRepository.findAllByFirstNameFetchNotes(firstName);
+  }
 
-    @GetMapping("/personsNameDto")
-    public List<PersonNameDto> getAllPersonsNameDto() {
-        return personRepository.findAllBy(PersonNameDto.class);
-    }
+  @GetMapping("/personsDto")
+  public List<PersonDto> getAllPersonsDto() {
+    return personRepository.findAllBy(PersonDto.class);
+  }
 
-    @GetMapping("/personsWithNoteCountDto")
-    public List<PersonNoteCountDto> getAllPersonsWithNoteCountDto() {
-        return personRepository.findAllPersonsWithCount();
-    }
+  @GetMapping("/personsNameDto")
+  public List<PersonNameDto> getAllPersonsNameDto() {
+    return personRepository.findAllBy(PersonNameDto.class);
+  }
 
-    @GetMapping("/personsWithNoteCountDtoPageable")
-    public Page<PersonNoteCountDto> getAllPersonsWithNoteCountPageableDto(Pageable pageable) {
-        return personRepository.findAllPersonsWithCountPageable(pageable);
-    }
+  @GetMapping("/personsWithNoteCountDto")
+  public List<PersonNoteCountDto> getAllPersonsWithNoteCountDto() {
+    return personRepository.findAllPersonsWithCount();
+  }
 
-    @PostMapping
-    public PersonDto createPerson(@RequestBody PersonDto personDto) {
-        PERSONS.add(new Person(personDto.firstName(), personDto.lastName()));
-        return personDto;
-    }
+  @GetMapping("/personsWithNoteCountDtoPageable")
+  public Page<PersonNoteCountDto> getAllPersonsWithNoteCountPageableDto(Pageable pageable) {
+    return personRepository.findAllPersonsWithCountPageable(pageable);
+  }
 
-    @DeleteMapping("/{id}")
-    public HttpStatus deleteById(@PathVariable Long id) {
-        return PERSONS.removeIf(person -> person.getId().equals(id)) ? HttpStatus.OK : HttpStatus.NOT_FOUND;
-    }
+  @PostMapping
+  @PreAuthorize("hasAnyAuthority('permission:write')")
+  public PersonDto createPerson(@RequestBody PersonDto personDto) {
+    PERSONS.add(new Person(personDto.firstName(), personDto.lastName()));
+    return personDto;
+  }
+
+  @DeleteMapping("/{id}")
+  @PreAuthorize("hasAnyAuthority('permission:write')")
+
+  public HttpStatus deleteById(@PathVariable Long id) {
+    log.warn("Trying to delete user with id {}", id);
+    return PERSONS.removeIf(person -> person.getId().equals(id)) ? HttpStatus.OK : HttpStatus.NOT_FOUND;
+  }
 }
