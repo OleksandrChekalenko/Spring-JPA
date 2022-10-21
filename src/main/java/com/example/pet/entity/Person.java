@@ -39,18 +39,15 @@ public class Person {
     @Enumerated(EnumType.STRING)
     @Column(name = "status")
     private Status status;
-
     @JsonManagedReference
     @Setter(AccessLevel.PRIVATE)
     @OneToMany(mappedBy = "person")
     @ToString.Exclude
     private List<Note> notes = new ArrayList<Note>();
-
     public Person(String firstName, String lastName) {
         this.firstName = firstName;
         this.lastName = lastName;
     }
-
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
@@ -58,7 +55,6 @@ public class Person {
         Person person = (Person) o;
         return id != null && Objects.equals(id, person.id);
     }
-
     @Override
     public int hashCode() {
         return getClass().hashCode();

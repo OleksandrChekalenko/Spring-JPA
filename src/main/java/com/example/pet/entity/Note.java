@@ -26,15 +26,12 @@ public class Note {
     @Id
     @GeneratedValue
     private Long id;
-
     @Column
     private String body;
-
     @JsonBackReference
     @ManyToOne(optional = false)
     @JoinColumn(name = "person_id")
     private Person person;
-
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
@@ -42,7 +39,6 @@ public class Note {
         Note person = (Note) o;
         return id != null && Objects.equals(id, person.id);
     }
-
     @Override
     public int hashCode() {
         return getClass().hashCode();

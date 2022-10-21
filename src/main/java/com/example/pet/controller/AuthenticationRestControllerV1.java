@@ -39,24 +39,24 @@ public class AuthenticationRestControllerV1 {
         this.jwtTokenProvider = jwtTokenProvider;
     }
 
-  @PostMapping("/login")
-  public ResponseEntity<?> authentication(@RequestBody AuthenticationRequestDTO request) {
-    try {
-        authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(request.getEmail(), request.getPassword()));
-        Person user = personRepository.findByEmail(request.getEmail()).orElseThrow(() -> new UsernameNotFoundException(NOT_USER_EXIST_MSG));
-        String token = jwtTokenProvider.createToken(request.getEmail(), user.getRole().name());
-        Map<Object, Object> response = new HashMap<>();
-        response.put(TOKEN, token);
-        response.put(EMAIL, request.getEmail());
-        return ResponseEntity.ok(response);
-    } catch (AuthenticationException e) {
-      return new ResponseEntity<>(INVALID_CREDS_MSG, HttpStatus.FORBIDDEN);
+    @PostMapping("/login")
+    public ResponseEntity<?> authentication(@RequestBody AuthenticationRequestDTO request) {
+        try {
+            authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(request.getEmail(), request.getPassword()));
+            Person user = personRepository.findByEmail(request.getEmail()).orElseThrow(() -> new UsernameNotFoundException(NOT_USER_EXIST_MSG));
+            String token = jwtTokenProvider.createToken(request.getEmail(), user.getRole().name());
+            Map<Object, Object> response = new HashMap<>();
+            response.put(TOKEN, token);
+            response.put(EMAIL, request.getEmail());
+            return ResponseEntity.ok(response);
+        } catch (AuthenticationException e) {
+            return new ResponseEntity<>(INVALID_CREDS_MSG, HttpStatus.FORBIDDEN);
+        }
     }
-  }
 
-  @PostMapping("/logout")
-  public void logout(HttpServletRequest request, HttpServletResponse response) {
-    SecurityContextLogoutHandler securityContextLogoutHandler = new SecurityContextLogoutHandler();
-    securityContextLogoutHandler.logout(request, response, null);
-  }
+    @PostMapping("/logout")
+    public void logout(HttpServletRequest request, HttpServletResponse response) {
+        SecurityContextLogoutHandler securityContextLogoutHandler = new SecurityContextLogoutHandler();
+        securityContextLogoutHandler.logout(request, response, null);
+    }
 }

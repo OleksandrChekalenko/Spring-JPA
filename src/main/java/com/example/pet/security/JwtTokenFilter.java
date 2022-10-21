@@ -17,27 +17,27 @@ import java.util.Objects;
 @Component
 public class JwtTokenFilter extends GenericFilterBean {
 
-  private final JwtTokenProvider jwtTokenProvider;
+    private final JwtTokenProvider jwtTokenProvider;
 
-  public JwtTokenFilter(JwtTokenProvider jwtTokenProvider) {
-    this.jwtTokenProvider = jwtTokenProvider;
-  }
-
-  @Override
-  public void doFilter(ServletRequest servletRequest, ServletResponse servletResponse, FilterChain filterChain) throws IOException, ServletException {
-
-    String token = jwtTokenProvider.resolveToken((HttpServletRequest) servletRequest);
-
-    try {
-      if (Objects.nonNull(token) && jwtTokenProvider.isTokenValid(token)) {
-        Authentication authentication = jwtTokenProvider.getAuthentication(token);
-        if (Objects.nonNull(authentication)) {
-          SecurityContextHolder.getContext().setAuthentication(authentication);
-        }
-      }
-    } catch (JwtAuthenticationException e) {
-      throw new JwtAuthenticationException(e.getMessage(), e.getHttpStatus());
+    public JwtTokenFilter(JwtTokenProvider jwtTokenProvider) {
+        this.jwtTokenProvider = jwtTokenProvider;
     }
-    filterChain.doFilter(servletRequest, servletResponse);
-  }
+
+    @Override
+    public void doFilter(ServletRequest servletRequest, ServletResponse servletResponse, FilterChain filterChain) throws IOException, ServletException {
+
+        String token = jwtTokenProvider.resolveToken((HttpServletRequest) servletRequest);
+
+        try {
+            if (Objects.nonNull(token) && jwtTokenProvider.isTokenValid(token)) {
+                Authentication authentication = jwtTokenProvider.getAuthentication(token);
+                if (Objects.nonNull(authentication)) {
+                    SecurityContextHolder.getContext().setAuthentication(authentication);
+                }
+            }
+        } catch (JwtAuthenticationException e) {
+            throw new JwtAuthenticationException(e.getMessage(), e.getHttpStatus());
+        }
+        filterChain.doFilter(servletRequest, servletResponse);
+    }
 }
