@@ -15,35 +15,36 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 @EnableWebSecurity
 @EnableGlobalMethodSecurity(prePostEnabled = true)
 public class SecurityConfig extends WebSecurityConfigurerAdapter {
+    private static final int CRYPT_STRENGHT = 12;
 
-  private final JwtConfigurer jwtConfigurer;
+    private final JwtConfigurer jwtConfigurer;
 
-  public SecurityConfig(JwtConfigurer jwtConfigurer) {
-    this.jwtConfigurer = jwtConfigurer;
-  }
+    public SecurityConfig(JwtConfigurer jwtConfigurer) {
+        this.jwtConfigurer = jwtConfigurer;
+    }
 
-  @Override
-  protected void configure(HttpSecurity http) throws Exception {
-    http.csrf().disable()
-        .sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS)
-        .and()
-        .authorizeHttpRequests()
-        .antMatchers("/").permitAll()
-        .antMatchers("/api/v1/auth/login").permitAll()
-        .anyRequest()
-        .authenticated()
-        .and()
-        .apply(jwtConfigurer);
-  }
+    @Override
+    protected void configure(HttpSecurity http) throws Exception {
+        http.csrf().disable()
+                .sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS)
+                .and()
+                .authorizeHttpRequests()
+                .antMatchers("/").permitAll()
+                .antMatchers("/api/v1/auth/login").permitAll()
+                .anyRequest()
+                .authenticated()
+                .and()
+                .apply(jwtConfigurer);
+    }
 
-  @Bean
-  @Override
-  public AuthenticationManager authenticationManagerBean() throws Exception {
-    return super.authenticationManagerBean();
-  }
+    @Bean
+    @Override
+    public AuthenticationManager authenticationManagerBean() throws Exception {
+        return super.authenticationManagerBean();
+    }
 
-  @Bean
-  protected PasswordEncoder passwordEncoder() {
-    return new BCryptPasswordEncoder(12);
-  }
+    @Bean
+    protected PasswordEncoder passwordEncoder() {
+        return new BCryptPasswordEncoder(CRYPT_STRENGHT);
+    }
 }

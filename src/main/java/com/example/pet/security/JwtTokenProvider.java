@@ -22,16 +22,18 @@ import java.util.Date;
 
 @Component
 public class JwtTokenProvider {
-  private static final String TOKEN_VALIDITY_EX_MSG = "JWT token is expired or invalid";
-  private final UserDetailsService userDetailsService;
-  @Value("${jwt.secret.key}")
-  private String secretKey;
-  @Value("${jwt.token.expiration}")
-  private long validityInMillis;
-  @Value("${jwt.header}")
-  private String authorizationHeader;
+    private static final String TOKEN_VALIDITY_EX_MSG = "JWT token is expired or invalid";
+    private static final String ROLE = "role";
 
-  public JwtTokenProvider(@Qualifier("userDetailsService") UserDetailsService userDetailsService) {
+    private final UserDetailsService userDetailsService;
+    @Value("${jwt.secret.key}")
+    private String secretKey;
+    @Value("${jwt.token.expiration}")
+    private long validityInMillis;
+    @Value("${jwt.header}")
+    private String authorizationHeader;
+
+    public JwtTokenProvider(@Qualifier("userDetailsService") UserDetailsService userDetailsService) {
     this.userDetailsService = userDetailsService;
   }
 
@@ -42,7 +44,7 @@ public class JwtTokenProvider {
 
   public String createToken(String username, String role) {
     Claims claims = Jwts.claims().setSubject(username);
-    claims.put("role", role);
+      claims.put(ROLE, role);
 
     Date now = new Date();
     Date validity = new Date(now.getTime() + validityInMillis * 1000);
