@@ -9,6 +9,7 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 
 import java.util.List;
+import java.util.Optional;
 
 public interface PersonRepository extends JpaRepository<Person, Integer> {
 
@@ -27,4 +28,6 @@ public interface PersonRepository extends JpaRepository<Person, Integer> {
 
     @Query("SELECT new com.example.pet.dto.PersonNoteCountDto(p.firstName, p.lastName, n.size) FROM Person p left join p.notes n")
     Page<PersonNoteCountDto> findAllPersonsWithCountPageable(Pageable pageable);
+
+    Optional<Person> findByEmail(String email);
 }

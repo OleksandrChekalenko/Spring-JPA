@@ -10,9 +10,6 @@ import java.util.stream.Stream;
 
 public interface NoteRepository extends JpaRepository<Note, Integer> {
 
-//    @Query("SELECT new com.example.pet.dto.NoteDto(n.body, n.person.firstName, n.person.lastName) FROM Note n inner join n.person p")
-//    List<NoteDto> getAllDtos();
-
     @Query("SELECT new com.example.pet.dto.NoteDto(n.body, n.person.firstName, n.person.lastName) FROM Note n")
     List<NoteDto> getAllDtos();
 
